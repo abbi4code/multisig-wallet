@@ -1,0 +1,28 @@
+services:
+  bitcoind:
+    image: ruimarinho/bitcoin-core:alpine
+    container_name: bitcoind-regtest
+    command:
+      - -regtest=1
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -rpcuser=abhishek
+      - -rpcpassword=abhishek
+      - -rpcport=18443
+      - -server=1
+      - -txindex=1
+      - -printtoconsole
+    ports:
+      - "18443:18443"
+      - "18444:18444"
+    volumes:
+      - bitcoin-data:/data
+    networks:
+      - bitcoin-network
+
+volumes:
+  bitcoin-data:
+
+networks:
+  bitcoin-network:
+    driver: bridge
