@@ -1,6 +1,6 @@
 import { client, testRpcConnection } from "./client";
 import { createMultisigWallet, createWallet } from "./wallet";
-import {fundWallet } from "./transaction";
+import {createTransaction, fundWallet } from "./transaction";
 
 async function main(): Promise<void> {
   await testRpcConnection();
@@ -13,6 +13,16 @@ async function main(): Promise<void> {
 
   const fundingTxid = await fundWallet(walletData);
   console.log("Funding transaction ID:", fundingTxid);
+
+
+  const { psbt, recipentAddress } = await createTransaction(
+    walletData,
+    fundingTxid
+  );
+  console.log(
+    "Transaction created, ready to sign. Destination address:",
+    recipentAddress
+  );
 }
 
 main().catch((err) => {

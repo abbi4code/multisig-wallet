@@ -85,3 +85,61 @@ export async function fundWallet(walletData: any): Promise<string> {
   }
 }
 
+export async function createTransaction(
+  walletData: any,
+  fundingTxid: string
+): Promise<any> {
+  try {
+    //1. Fetching the UTXO details from the multisig address
+    const utxos = await client.command("listunspent", 0, 9999999, [
+      walletData.address,
+    ]);
+
+    if (utxos.length === 0) {
+      throw new Error("No UTXOs found for multisig address");
+    }
+
+    // ^ does i am using the last utxo that made while sending btc to this multisig wallet address
+    const utxo = utxos.find((u: any) => u.txid === fundingTxid);
+    if (!utxo) {
+      throw new Error("Funding tx UTXO not found");
+    }
+
+    console.log("UTXO to spend:", utxo);
+
+    //^ Creating new address to send the funds to
+    const recipentAddress = await client.command("getnewaddress");
+    console.log("Recipent Address:", recipentAddress);
+
+    //deducting a small fee
+    const amountTosend = utxo.amount - 0.0001;
+    if (amountTosend <= 0) {
+      throw new Error("UTXO amount too small to cover the fee");
+    }
+
+    //4. creating a PSBT(Partially Signed Bitcoin Tx)
+    const psbt = new bitcoin.Psbt({ network });
+
+    psbt.addInput({
+      hash: utxo.txid,
+      index: utxo.vout,
+      witnessUtxo: {
+        script: Buffer.from(utxo.scriptPubKey, "hex"),
+        value: Math.round(utxo.amount * 1e8), // convert BTC to satoshis
+      },
+  
+      witnessScript: walletData.p2msScript.output,
+    });
+    psbt.addOutput({
+      address: recipentAddress,
+      value: Math.round(amountTosend * 1e8),
+    });
+
+    console.log("PSBT created: ", psbt.toBase64());
+
+    return { psbt, recipentAddress };
+  } catch (error) {
+    console.error("Error in createTransaction:", error);
+    throw error;
+  }
+}
