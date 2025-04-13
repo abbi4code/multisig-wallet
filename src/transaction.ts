@@ -216,11 +216,19 @@ export async function logWalletHistory(walletData: any, fundingTxid: string, spe
   
       // Step 1: Fetch and log the funding transaction details
       const fundingTxDetails = await client.command("gettransaction", fundingTxid);
-     
+      console.log("\nFunding Transaction (Received 0.01 BTC):");
+      console.log("TXID:", fundingTxid);
+      console.log("Amount:", fundingTxDetails.amount, "BTC");
+      console.log("Confirmations:", fundingTxDetails.confirmations);
+      console.log("Details:", fundingTxDetails);
   
       // Step 2: Fetch and log the spending transaction details
       const spendingTxDetails = await client.command("gettransaction", spendingTxid);
-     
+      console.log("\nSpending Transaction (Sent to Recipient):");
+      console.log("TXID:", spendingTxid);
+      console.log("Amount:", spendingTxDetails.amount, "BTC");
+      console.log("Confirmations:", spendingTxDetails.confirmations);
+      console.log("Details:", spendingTxDetails);
   
       // Step 3: Check the final balance of the multisig wallet
       const multisigUtxos = await client.command("listunspent", 0, 9999999, [walletData.address]);
