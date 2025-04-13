@@ -143,3 +143,41 @@ export async function createTransaction(
     throw error;
   }
 }
+
+export async function signTransaction(
+  walletData: any,
+  psbt: bitcoin.Psbt
+): Promise<bitcoin.Psbt> {
+  try {
+    if (!walletData.keyPair1 || !walletData.keyPair1.publicKey) {
+      throw new Error("Invalid keyPair1");
+    }
+    if (!walletData.keyPair2 || !walletData.keyPair2.publicKey) {
+      throw new Error("Invalid keyPair2");
+    }
+    console.log(
+      "keyPair1 publicKey:",
+      walletData.keyPair1.publicKey.toString("hex")
+    );
+    console.log(
+      "keyPair2 publicKey:",
+      walletData.keyPair2.publicKey.toString("hex")
+    );
+
+    // Sign the PSBT with both keys
+    psbt.signInput(0, walletData.keyPair1);
+    console.log("Signed with keypair1");
+
+    psbt.signInput(0, walletData.keyPair2);
+    console.log("Signed with keypair2");
+
+    //3. finalize the input
+    psbt.finalizeAllInputs();
+    console.log("PSBT finalized");
+
+    return psbt;
+  } catch (error) {
+    console.error("Error in signTransaction:", error);
+    throw error;
+  }
+}

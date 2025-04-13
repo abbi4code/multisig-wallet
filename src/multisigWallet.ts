@@ -1,6 +1,6 @@
 import { client, testRpcConnection } from "./client";
 import { createMultisigWallet, createWallet } from "./wallet";
-import {createTransaction, fundWallet } from "./transaction";
+import {createTransaction, fundWallet, signTransaction } from "./transaction";
 
 async function main(): Promise<void> {
   await testRpcConnection();
@@ -23,6 +23,10 @@ async function main(): Promise<void> {
     "Transaction created, ready to sign. Destination address:",
     recipentAddress
   );
+
+  const signedPSBT = await signTransaction(walletData, psbt);
+  console.log("signed PSBT", signedPSBT.toBase64());
+
 }
 
 main().catch((err) => {
