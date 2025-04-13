@@ -181,3 +181,56 @@ export async function signTransaction(
     throw error;
   }
 }
+
+export async function broadcastTransaction(
+  psbt: bitcoin.Psbt
+): Promise<string> {
+  try {
+    //1. extracting final tx hex from the PSBT
+    const tx = psbt.extractTransaction();
+    const txHex = tx.toHex();
+    console.log("Final transaction hex:", txHex);
+
+    //2. broadcast the transaction
+    const txid = await client.command("sendrawtransaction", txHex);
+    console.log("Transaction broadcasted. TXID", txid);
+
+    //3. Mine a block to confirm the transaction
+    const newAddress = await client.command("getnewaddress");
+    console.log("Transaction confirmed by mining 1 block");
+
+    //4. verify the transaction
+    const txDetails = await client.command("gettransaction", txid);
+    console.log("Broadcasted transaction details:", txDetails);
+
+    return txid;
+  } catch (error) {
+    console.error("Error in broadcastTransaction:", error);
+    throw error
+  }
+}
+
+export async function logWalletHistory(walletData: any, fundingTxid: string, spendingTxid: string): Promise<void> {
+    try {
+      console.log("\n=== Multisig Wallet Transaction History ===");
+  
+      // Step 1: Fetch and log the funding transaction details
+      const fundingTxDetails = await client.command("gettransaction", fundingTxid);
+     
+  
+      // Step 2: Fetch and log the spending transaction details
+      const spendingTxDetails = await client.command("gettransaction", spendingTxid);
+     
+  
+      // Step 3: Check the final balance of the multisig wallet
+      const multisigUtxos = await client.command("listunspent", 0, 9999999, [walletData.address]);
+      const multisigBalance = multisigUtxos.reduce((sum: number, utxo: any) => sum + utxo.amount, 0);
+      console.log(`\nFinal Multisig Address Balance (${walletData.address}): ${multisigBalance} BTC`);
+  
+      // Step 4: Log any remaining UTXOs (if any)
+      console.log("\nRemaining UTXOs for Multisig Address:", multisigUtxos.length > 0 ? multisigUtxos : "None");
+    } catch (error) {
+      console.error("Error in logWalletHistory:", error);
+      throw error;
+    }
+  }

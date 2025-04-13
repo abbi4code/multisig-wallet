@@ -1,6 +1,6 @@
 import { client, testRpcConnection } from "./client";
 import { createMultisigWallet, createWallet } from "./wallet";
-import {createTransaction, fundWallet, signTransaction } from "./transaction";
+import {broadcastTransaction, createTransaction, fundWallet, logWalletHistory, signTransaction } from "./transaction";
 
 async function main(): Promise<void> {
   await testRpcConnection();
@@ -26,6 +26,14 @@ async function main(): Promise<void> {
 
   const signedPSBT = await signTransaction(walletData, psbt);
   console.log("signed PSBT", signedPSBT.toBase64());
+
+  const broadcastedTxid = await broadcastTransaction(signedPSBT);
+  console.log("Broadcasted transaction ID", broadcastedTxid);
+
+  // Log the wallet history
+  await logWalletHistory(walletData, fundingTxid, broadcastedTxid);
+  console.log("\nCompetency Test 1 Complete!");
+
 
 }
 
