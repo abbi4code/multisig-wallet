@@ -1,7 +1,6 @@
-import {client,testRpcConnection} from "./client"
-import {createMultisigWallet,createWallet} from "./wallet"
-import { fundWallet } from "./transaction";
-
+import { client, testRpcConnection } from "./client";
+import { createMultisigWallet, createWallet } from "./wallet";
+import {fundWallet } from "./transaction";
 
 async function main(): Promise<void> {
   await testRpcConnection();

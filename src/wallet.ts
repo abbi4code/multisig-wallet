@@ -45,6 +45,7 @@ export async function createMultisigWallet() {
 
     const p2wsh = bitcoin.payments.p2wsh({ redeem: p2msScript, network });
     console.log("multisig address:", p2wsh.address);
+    console.log("++++++++++++++",p2wsh.output)
 
     return { keyPair1, keyPair2, pubkeys, p2msScript, address: p2wsh.address };
   } catch (error) {
