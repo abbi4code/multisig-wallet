@@ -3,7 +3,10 @@
 Hey there! I'm Abhishek, and this is my submission for the Summer of Bitcoin Compentency Test 1 for the "Improve Testing of Caravan" project. I'm super excited to be applying for this program, and I've poured a lot of efforts into making this script clear, functional and easy to run. This README will walk you through what the script does, how to set it up, and how it prepared me for contributing to Caravan. Let's get started!
 
 ## Quick Demo
-[Screencast from 2025-04-21 14-15-02.webm](https://github.com/user-attachments/assets/c931fce7-ccae-477e-baad-16f0b2c33743)
+
+<video src="demo/demo.mp4" width="100%" controls autoplay muted loop>
+  Your browser does not support the video tag.
+</video>
 
 ## What This Script Does
 
