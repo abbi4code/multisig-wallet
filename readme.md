@@ -5,7 +5,7 @@ Hey there! I'm Abhishek, and this is my submission for the Summer of Bitcoin Com
 ## What This Script Does
 
 This script completes Competency Test 1 by doing the following in Bitcoin’s regtest environment:
-- Bootstraps a 2-of-2 multisig wallet using `bitcoinjs-lib`.
+- Bootstraps a 2-of-2 multisig wallet using `bitcoinjs-lib` and `bip32` with a fixed seed, ensuring the same wallet address is generated every time.
 - Funds the wallet with BTC by mining blocks and sending coins.
 - Creates a transaction to spend from the multisig wallet to a new address.
 - Signs the transaction with both private keys (since it’s a 2-of-2 multisig).
@@ -33,6 +33,7 @@ Here's how I've organized the project:
 
 I used a few key packages to make this script work smoothly:
 - **bitcoinjs-lib**: For creating the multisig wallet, generating key pairs, and handling transactions (like PSBTs). It’s a go-to library for Bitcoin scripting.
+- **bip32**: For deterministic key generation using a fixed seed, aligning with bip32 standard for reproducible wallet creation.
 - **bitcoin-core**: To interact with Bitcoin Core via RPC—super useful for mining blocks and broadcasting transactions in regtest.
 - **ecpair** and **tiny-secp256k1**: For securely generating and managing key pairs, which are required for the multisig wallet.
 - **TypeScript**: To write clean, type-safe code that aligns with Caravan’s stack.
@@ -81,8 +82,9 @@ I’m ready to jump into the project goals: migrating at least 50% of Caravan’
 
 Building this script taught me a lot:
 - I learned how to sign a 2-of-2 multisig transaction using PSBTs, which was tricky but rewarding.
+- I faced a signing issue where `bip32` returned signatures as Uint8Array, but `bitcoinjs-lib` expected Buffer.
 - Using `importaddress` to track the multisig wallet in Bitcoin Core was a new concept for me.
-- Setting up Docker Compose to run Bitcoin Core made the setup process much smoother—I hope it helps you too!
+- Setting up Docker Compose to run Bitcoin Core made the setup process much smoother I hope it helps you too!
 
 ## Next Steps
 
