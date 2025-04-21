@@ -54,7 +54,6 @@ export async function fundWallet(walletData: any): Promise<string> {
       `Sending ${amountTosend} BTC to multisig address: ${walletData.address}`
     );
 
-    //! here
     // import multisig address to ensure it's tracked
     await client.command("importaddress", walletData.address, ",false");
 
@@ -64,7 +63,6 @@ export async function fundWallet(walletData: any): Promise<string> {
 
     //5. Time to verify the transaction
     const txDetails = await client.command("gettransaction", txid);
-    // console.log("Funding tx details:", txDetails);
 
     //6. checking multisig balance
     const multisigUtxos = await client.command("listunspent", 0, 9999999, [
@@ -99,15 +97,11 @@ export async function createTransaction(
       throw new Error("No UTXOs found for multisig address");
     }
 
-    // ^ does i am using the last utxo that made while sending btc to this multisig wallet address
     const utxo = utxos.find((u: any) => u.txid === fundingTxid);
     if (!utxo) {
       throw new Error("Funding tx UTXO not found");
     }
 
-    // console.log("UTXO to spend:", utxo);
-
-    //^ Creating new address to send the funds to
     const recipentAddress = await client.command("getnewaddress");
     console.log("Recipent Address:", recipentAddress);
 
@@ -126,7 +120,7 @@ export async function createTransaction(
       index: utxo.vout,
       witnessUtxo: {
         script: Buffer.from(utxo.scriptPubKey, "hex"),
-        value: Math.round(utxo.amount * 1e8), // convert BTC to satoshis
+        value: Math.round(utxo.amount * 1e8), // converting BTC to satoshis
       },
   
       witnessScript: walletData.p2msScript.output,
@@ -136,8 +130,6 @@ export async function createTransaction(
       value: Math.round(amountTosend * 1e8),
     });
     psbt.addOutput({address: walletData.address, value: Math.round(changeAmount * 1e8)})
-
-    console.log("PSBT created: ", psbt.toBase64());
 
     return { psbt, recipentAddress };
   } catch (error) {

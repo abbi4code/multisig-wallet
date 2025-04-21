@@ -6,10 +6,6 @@ async function main(): Promise<void> {
   await testRpcConnection();
   await createWallet();
   const walletData = await createMultisigWallet();
-  console.log("Wallet data created ", {
-    address: walletData.address,
-    pubkeys: walletData.pubkeys.map((pk) => pk.toString("hex")),
-  });
 
   const fundingTxid = await fundWallet(walletData);
   console.log("Funding transaction ID:", fundingTxid);
@@ -25,15 +21,13 @@ async function main(): Promise<void> {
   );
 
   const signedPSBT = await signTransaction(walletData, psbt);
-  // console.log("signed PSBT", signedPSBT.toBase64());
 
   const broadcastedTxid = await broadcastTransaction(signedPSBT);
   console.log("Broadcasted transaction ID", broadcastedTxid);
 
   // Log the wallet history
   await logWalletHistory(walletData, fundingTxid, broadcastedTxid);
-  console.log("\nCompetency Test 1 Complete!");
-
+  console.log("\nCompetency Test 1 doneee");
 
 }
 

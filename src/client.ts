@@ -11,7 +11,6 @@ export const client = new BitcoinCore({
 export async function testRpcConnection(): Promise<void> {
     try {
       const blockchainInfo = await client.command("getblockchaininfo");
-      console.log("Connected to Bitcoin Core:", blockchainInfo);
     } catch (err) {
       console.error("Failed to connect to Bitcoin Core:", err);
       process.exit(1);
