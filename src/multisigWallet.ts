@@ -25,7 +25,7 @@ async function main(): Promise<void> {
   );
 
   const signedPSBT = await signTransaction(walletData, psbt);
-  console.log("signed PSBT", signedPSBT.toBase64());
+  // console.log("signed PSBT", signedPSBT.toBase64());
 
   const broadcastedTxid = await broadcastTransaction(signedPSBT);
   console.log("Broadcasted transaction ID", broadcastedTxid);

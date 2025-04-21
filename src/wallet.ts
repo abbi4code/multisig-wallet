@@ -3,11 +3,15 @@ import * as ecc from "tiny-secp256k1";
 import ECPairFactory from "ecpair";
 import { regtest } from "bitcoinjs-lib/src/networks";
 import {client} from "./client"
+import {BIP32Factory} from "bip32"
 
 
 
 const network = regtest;
 const ECPair = ECPairFactory(ecc);
+const bip32 = BIP32Factory(ecc)
+const seed = Buffer.from("taking-abhishek-as-seed")
+const root = bip32.fromSeed(seed,network);
 
 export async function createWallet(): Promise<void> {
   try {
@@ -29,8 +33,12 @@ export async function createWallet(): Promise<void> {
 
 export async function createMultisigWallet() {
   try {
-    const keyPair1 = ECPair.makeRandom({ network: bitcoin.networks.regtest });
-    const keyPair2 = ECPair.makeRandom({ network: bitcoin.networks.regtest });
+    const child1 = root.derivePath("m/0/0");
+    const child2= root.derivePath("m/0/1");
+
+    const keyPair1 = ECPair.fromPrivateKey(Buffer.from(child1.privateKey!), {network});
+    const keyPair2 = ECPair.fromPrivateKey(Buffer.from(child2.privateKey!), {network});
+
 
     const pubkeys = [
       Buffer.from(keyPair1.publicKey),

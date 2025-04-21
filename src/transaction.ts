@@ -64,7 +64,7 @@ export async function fundWallet(walletData: any): Promise<string> {
 
     //5. Time to verify the transaction
     const txDetails = await client.command("gettransaction", txid);
-    console.log("Funding tx details:", txDetails);
+    // console.log("Funding tx details:", txDetails);
 
     //6. checking multisig balance
     const multisigUtxos = await client.command("listunspent", 0, 9999999, [
@@ -105,14 +105,15 @@ export async function createTransaction(
       throw new Error("Funding tx UTXO not found");
     }
 
-    console.log("UTXO to spend:", utxo);
+    // console.log("UTXO to spend:", utxo);
 
     //^ Creating new address to send the funds to
     const recipentAddress = await client.command("getnewaddress");
     console.log("Recipent Address:", recipentAddress);
 
     //deducting a small fee
-    const amountTosend = utxo.amount - 0.0001;
+    const amountTosend = 0.005;
+    const changeAmount = utxo.amount - amountTosend- 0.0001;
     if (amountTosend <= 0) {
       throw new Error("UTXO amount too small to cover the fee");
     }
@@ -134,6 +135,7 @@ export async function createTransaction(
       address: recipentAddress,
       value: Math.round(amountTosend * 1e8),
     });
+    psbt.addOutput({address: walletData.address, value: Math.round(changeAmount * 1e8)})
 
     console.log("PSBT created: ", psbt.toBase64());
 
@@ -155,14 +157,6 @@ export async function signTransaction(
     if (!walletData.keyPair2 || !walletData.keyPair2.publicKey) {
       throw new Error("Invalid keyPair2");
     }
-    console.log(
-      "keyPair1 publicKey:",
-      walletData.keyPair1.publicKey.toString("hex")
-    );
-    console.log(
-      "keyPair2 publicKey:",
-      walletData.keyPair2.publicKey.toString("hex")
-    );
 
     // Sign the PSBT with both keys
     psbt.signInput(0, walletData.keyPair1);
@@ -189,7 +183,7 @@ export async function broadcastTransaction(
     //1. extracting final tx hex from the PSBT
     const tx = psbt.extractTransaction();
     const txHex = tx.toHex();
-    console.log("Final transaction hex:", txHex);
+    // console.log("Final transaction hex:", txHex);
 
     //2. broadcast the transaction
     const txid = await client.command("sendrawtransaction", txHex);
@@ -201,7 +195,7 @@ export async function broadcastTransaction(
 
     //4. verify the transaction
     const txDetails = await client.command("gettransaction", txid);
-    console.log("Broadcasted transaction details:", txDetails);
+    // console.log("Broadcasted transaction details:", txDetails);
 
     return txid;
   } catch (error) {
@@ -220,7 +214,7 @@ export async function logWalletHistory(walletData: any, fundingTxid: string, spe
       console.log("TXID:", fundingTxid);
       console.log("Amount:", fundingTxDetails.amount, "BTC");
       console.log("Confirmations:", fundingTxDetails.confirmations);
-      console.log("Details:", fundingTxDetails);
+      // console.log("Details:", fundingTxDetails);
   
       // Step 2: Fetch and log the spending transaction details
       const spendingTxDetails = await client.command("gettransaction", spendingTxid);
@@ -228,7 +222,7 @@ export async function logWalletHistory(walletData: any, fundingTxid: string, spe
       console.log("TXID:", spendingTxid);
       console.log("Amount:", spendingTxDetails.amount, "BTC");
       console.log("Confirmations:", spendingTxDetails.confirmations);
-      console.log("Details:", spendingTxDetails);
+      // console.log("Details:", spendingTxDetails);
   
       // Step 3: Check the final balance of the multisig wallet
       const multisigUtxos = await client.command("listunspent", 0, 9999999, [walletData.address]);
