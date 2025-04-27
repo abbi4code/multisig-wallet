@@ -99,5 +99,5 @@ I’m excited to contribute to Caravan! My next steps would be:
 Thanks for taking the time to review my submission! I’d love to chat more about how I can help improve Caravan’s testing. You can reach me at [abhishek4code@example.com]. 
 Thanks for taking the time to review my submission!
 
-— [Abhishek Raj]
+Abhishek Raj
 
