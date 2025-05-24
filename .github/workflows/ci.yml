@@ -1,0 +1,47 @@
+name: multisig wallet ci
+
+on:
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-multisig-wallet:
+    runs-on: ubuntu-latest
+
+    services:
+      #bitcoin core 
+      #starting with container name
+      bitcoind:
+        image: ruimarinho/bitcoin-core:alpine
+        ports:
+          - 18443:18443 #rpc port
+          - 18444:18444 #p2p port
+        options: >-
+          --health-cmd "bitcoin-cli -regtest -rpcuser=abhishek -rpcpassword=abhishek -rpcport=18443 getblockchaininfo || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        env:
+          BITCOIN_NETWORK: regtest
+          BITCOIN_RPC_USERNAME: abhishek
+          BITCOIN_RPC_PASSWORD: abhishek
+          BITCOIN_RPC_PORT: 18443
+          BITCOIN_RPC_ALLOW_IP: "0.0.0.0/0"
+          BITCOIN_RPC_BIND: "0.0.0.0"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install Dependencies
+        uses: npm ci
+      
+
