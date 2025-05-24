@@ -1,6 +1,4 @@
-# Summer of Bitcoin Compentency Test 1 - Multisig Wallet Script
-
-Hey there! I'm Abhishek, and this is my submission for the Summer of Bitcoin Compentency Test 1 for the "Improve Testing of Caravan" project. I'm super excited to be applying for this program, and I've poured a lot of efforts into making this script clear, functional and easy to run. This README will walk you through what the script does, how to set it up, and how it prepared me for contributing to Caravan. Let's get started!
+# Multisig Wallet Script
 
 ## Quick Demo
 https://github.com/user-attachments/assets/cc186068-7a59-48ca-85e8-2ee2ae43265a
@@ -14,8 +12,6 @@ This script completes Competency Test 1 by doing the following in Bitcoin’s re
 - Signs the transaction with both private keys (since it’s a 2-of-2 multisig).
 - Broadcasts the transaction to the regtest network and confirms it by mining a block.
 - Logs the wallet’s transaction history, showing both the funding and spending transactions.
-
-I’ve written the script in TypeScript to align with Caravan’s tech stack, and I’ve modularized the code into separate files for better readability and maintainability. I also added a Docker Compose setup to make running a Bitcoin Core node as easy as `docker compose up` hope that makes things smoother for you to test!
 
 ## Prerequisites
 
@@ -39,7 +35,6 @@ I used a few key packages to make this script work smoothly:
 - **bip32**: For deterministic key generation using a fixed seed, aligning with bip32 standard for reproducible wallet creation.
 - **bitcoin-core**: To interact with Bitcoin Core via RPC—super useful for mining blocks and broadcasting transactions in regtest.
 - **ecpair** and **tiny-secp256k1**: For securely generating and managing key pairs, which are required for the multisig wallet.
-- **TypeScript**: To write clean, type-safe code that aligns with Caravan’s stack.
 
 You can see the full list and versions in `package.json`. I also added type definitions (`@types/bitcoinjs-lib`, `@types/node`) as dev dependencies for better TypeScript support.
 
@@ -72,15 +67,6 @@ The script will log each step as it:
 - Logs the wallet history.
 
 
-## Why This Matters for Caravan
-
-This script isn’t just about completing the test—it’s a stepping stone for the Caravan project! Here’s how it prepares me:
-- **TypeScript and Bitcoin RPC**: I used TypeScript and `bitcoin-core` to interact with the regtest network, which matches Caravan’s tech stack and the skills needed for the project.
-- **Modular Code**: I split the code into separate files (`wallet.ts`, `transaction.ts`, etc.) to keep it organized, just like Caravan’s structure (e.g., `apps/coordinator` and `packages`).
-- **Testing Mindset**: The script includes balance checks and error handling, showing I’m thinking about reliability—crucial for migrating Caravan’s tests to Vitest and adding Playwright E2E tests.
-
-I’m ready to jump into the project goals: migrating at least 50% of Caravan’s tests to Vitest, setting up Playwright for E2E testing (like creating a wallet or signing transactions), and running these tests in GitHub CI to prevent regressions.
-
 ## Challenges and Learnings
 
 Building this script taught me a lot:
@@ -89,14 +75,6 @@ Building this script taught me a lot:
 - Using `importaddress` to track the multisig wallet in Bitcoin Core was a new concept for me.
 - Setting up Docker Compose to run Bitcoin Core made the setup process much smoother I hope it helps you too!
 
-## Next Steps
-
-I’m excited to contribute to Caravan! My next steps would be:
-- Exploring Caravan’s test suite (likely in `apps/coordinator/tests`) to start the Jest-to-Vitest migration.
-- Writing Playwright tests for key flows like wallet creation and transaction signing.
-- Setting up GitHub Actions to run Vitest and Playwright tests on every PR.
-
-Thanks for taking the time to review my submission! I’d love to chat more about how I can help improve Caravan’s testing. You can reach me at [abhishek4code@example.com]. 
 Thanks for taking the time to review my submission!
 
 Abhishek Raj
