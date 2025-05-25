@@ -11,28 +11,6 @@ jobs:
   test-multisig-wallet:
     runs-on: ubuntu-latest
 
-    services:
-      #bitcoin core 
-      #starting with container name
-      bitcoind:
-        image: ruimarinho/bitcoin-core:alpine
-        ports:
-          - 18443:18443 #rpc port
-          - 18444:18444 #p2p port
-        options: >-
-          --health-cmd "bitcoin-cli -regtest -rpcuser=abhishek -rpcpassword=abhishek -rpcport=18443 getblockchaininfo || exit 1"
-          --health-interval 15s
-          --health-timeout 10s
-          --health-retries 20
-          -regtest=1
-          -server=1
-          -rpcbind=0.0.0.0:18443
-          -rpcallowedip=0.0.0.0/0
-          -rpcuser=abhishek
-          -rpcpassword=abhishek
-          -rpcport=18443
-          -printtoconsole=1
-          -txindex=1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,39 +24,51 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       
-      - name: Wait for bitcoin core to be ready
+      - name: Starting Bitcoin Core in regtest
         run: |
-          echo "waiting for bitcoin core to start"
-          # checkign first the rpc connectivity if avail at port localhost:18443
-          for i in {1..30}; do
-            if curl -s --data-binary '{"jsonrpc":"1.0", "id":"test","method":"getblockchaininfo","params":[]}' \
-               -H "Content-Type: application/json" \
-               -u "abhishek:abhishek" \
-               http://127.0.0.1:18443/; then
-              echo "Bitcoin core RPC is responding now.."
+          echo "starting bitcoin core in regtest ✌️"
+          docker run -d \
+          --name bitcoind-regtest \
+          -p 18443:18443 \
+          -p 18444:18444 \
+          ruimarinho/bitcoin-core:alpine \
+          -regtest \
+          -server \
+          -rpcbind=0.0.0.0:18443 \
+          -rpcalllowip=0.0.0.0/0 \
+          -rpcuser=abhishek \
+          -rpcpassword=abhishek \
+          -rpcport=18443 \
+          -printtoconsole \
+          -txindex \
+          -fallbackfee=0.0002 \
+          -acceptnonstdtxn=1
+      
+      - name: Wait for bitcoin core to start
+        run: |
+          echo "waiting for bitcoin core to be ready ...."
+          
+          for i in {0..20}; do
+            if docker exec bitcoind-regtest bitcoin-cli \
+                -regtest \
+                -rpcuser=abhishek \
+                -rpcpassword=abhishek \
+                getblockchaininfo >/dev/null 2>&1; then
+              echo "Bitcoin core is readyyy"
               break
             fi
-            echo "attempt $i: bitcoin core is not ready yet, waittt"
-            sleep 2
+            echo "attempt: $1/20 | bitcoin core starting again 3 2 1 ... lets gooo"
+            sleep 3
           done
 
-      - name: verify the bitcoin core configuration
-        run: |
-          echo "testing bitcoin core RPC connection firstt"
-          # for now using curl instead of bitcoin-cli (as that one not installed yet hehe)
-          response=$(curl -s --data-binary '{"jsonrpc":"1.0","id":"test","method":"getblockchaininfo","params":[]}' \
-                     -H "Content-Type: application/json" \
-                     -u "abhishek:abhishek" \
-                     http://127.0.0.1:18443/ )
-          echo "Bitcoin core res: $response"
+          echo "Bitcoin core status"
+          docker exec bitcoind-regtest bitcoin-cli \
+            -regtest \
+            -rpcuser=abhishek \
+            -rpcpassword=abhishek \
+            getblockchaininfo | grep -E '(chain|blocks|bestblockhash)'
 
-          if echo "$response" | grep -q '"chain":"regtest"'; then 
-            echo "Bitcoin core runnninggg 😊 :))"
-          else
-            echo "Bitcoin core is not in regtest mode or not responding 😭"
-            exit 1
-          fi 
-
+        
       - name: Build typescript
         run: npm run build
       
@@ -87,18 +77,29 @@ jobs:
         env:
           NODE_ENV: test
       
-      - name: lets verify test results
+      - name: Showing bitcoin core logs
+        if: failure()
         run: |
-          echo "multisig wallet test completed successfully"
-          # will add more verifcation here like if some files are created or not or check for some logs 
+          echo "Bitcoin core logs" 
+          docker logs --tail 50 bitcoind-regtest
+      
+      - name: CleanUp bitcoin container
+        if: always()
+        run: |
+          echo "removing bitcoind-regtest container"
+          docker stop bitcoind-regtest || true
+          docker rm bitcoind-regtest || true
+      
 
-      - name: displaying test results
+      - name: CI results hehee 
+      #here like for now lets be always but this shoudl not be ig always (like on failure)
         if: always()
         run: |
           echo "<--test summary-->"
           echo "bitcoin Core regtest service started"
           echo "nodejs installed successfully"
           echo "Multisig wallet operations completed"
+          echo "CI pipeline completedd"
 
             
 
