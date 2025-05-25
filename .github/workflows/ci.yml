@@ -42,16 +42,16 @@ jobs:
           cache: 'npm'
       
       - name: Install Dependencies
-        uses: npm ci
+        run: npm ci
       
       - name: Wait for bitcoin core to be ready
         run: |
-          echo: "waiting for bitcoin core to start"
+          echo "waiting for bitcoin core to start"
           # checkign first the rpc connectivity if avail at port localhost:18443
           for i in {1..30}; do
-            if curl -s --data-banary '{"jsonrpc":"1.0", "id":"test","method":"getblockchaininfo","params":[]}' \
+            if curl -s --data-binary '{"jsonrpc":"1.0", "id":"test","method":"getblockchaininfo","params":[]}' \
                -H "Content-Type: application/json" \
-               -u "abhishek=abhishek" \
+               -u "abhishek:abhishek" \
                http://127.0.0.1:18443/; then
               echo "Bitcoin core RPC is responding now.."
               break
@@ -70,7 +70,7 @@ jobs:
                      http://127.0.0.1:18443/ )
           echo "Bitcoin core res: $response"
 
-          if echo "$response | grep -q '"chain":"regtest"'; then 
+          if echo "$response" | grep -q '"chain":"regtest"'; then 
             echo "Bitcoin core runnninggg :))"
           else
             echo "some issue in the configuration"
@@ -78,7 +78,7 @@ jobs:
           fi 
 
       - name: Build typescript
-        run: npm run Build
+        run: npm run build
       
       - name: run multisig wallet test
         run: npm start
@@ -93,11 +93,10 @@ jobs:
       - name: displaying test results
         if: always()
         run: |
-          echo "=== Test Summary ==="
-          echo "✓ Bitcoin Core regtest service started"
-          echo "✓ Node.js application built successfully"
-          echo "✓ Multisig wallet operations completed"
-          echo "✓ GitHub Actions learning objectives achieved"
+          echo "<--test summary-->"
+          echo "bitcoin Core regtest service started"
+          echo "nodejs installed successfully"
+          echo "Multisig wallet operations completed"
 
             
 
