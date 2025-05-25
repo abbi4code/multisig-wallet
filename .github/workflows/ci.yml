@@ -21,16 +21,18 @@ jobs:
           - 18444:18444 #p2p port
         options: >-
           --health-cmd "bitcoin-cli -regtest -rpcuser=abhishek -rpcpassword=abhishek -rpcport=18443 getblockchaininfo || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-        env:
-          BITCOIN_NETWORK: regtest
-          BITCOIN_RPC_USERNAME: abhishek
-          BITCOIN_RPC_PASSWORD: abhishek
-          BITCOIN_RPC_PORT: 18443
-          BITCOIN_RPC_ALLOW_IP: "0.0.0.0/0"
-          BITCOIN_RPC_BIND: "0.0.0.0"
+          --health-interval 15s
+          --health-timeout 10s
+          --health-retries 20
+          -regtest=1
+          -server=1
+          -rpcbind=0.0.0.0:18443
+          -rpcallowedip=0.0.0.0/0
+          -rpcuser=abhishek
+          -rpcpassword=abhishek
+          -rpcport=18443
+          -printtoconsole=1
+          -txindex=1
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -71,9 +73,9 @@ jobs:
           echo "Bitcoin core res: $response"
 
           if echo "$response" | grep -q '"chain":"regtest"'; then 
-            echo "Bitcoin core runnninggg :))"
+            echo "Bitcoin core runnninggg 😊 :))"
           else
-            echo "some issue in the configuration"
+            echo "Bitcoin core is not in regtest mode or not responding 😭"
             exit 1
           fi 
 
