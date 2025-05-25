@@ -35,7 +35,7 @@ jobs:
           -regtest \
           -server \
           -rpcbind=0.0.0.0:18443 \
-          -rpcalllowip=0.0.0.0/0 \
+          -rpcallowip=0.0.0.0/0 \
           -rpcuser=abhishek \
           -rpcpassword=abhishek \
           -rpcport=18443 \
@@ -48,7 +48,7 @@ jobs:
         run: |
           echo "waiting for bitcoin core to be ready ...."
           
-          for i in {0..20}; do
+          for i in {1..20}; do
             if docker exec bitcoind-regtest bitcoin-cli \
                 -regtest \
                 -rpcuser=abhishek \
@@ -57,7 +57,7 @@ jobs:
               echo "Bitcoin core is readyyy"
               break
             fi
-            echo "attempt: $1/20 | bitcoin core starting again 3 2 1 ... lets gooo"
+            echo "attempt: $i/20 | bitcoin core starting again 3 2 1 ... lets gooo"
             sleep 3
           done
 
