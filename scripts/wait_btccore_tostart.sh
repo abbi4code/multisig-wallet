@@ -14,7 +14,7 @@ for i in {1..20}; do
     docker exec bitcoind-regtest bitcoin-cli \
       -rpcuser=abhishek \
       -rpcpassword=abhishek \
-      getblockchaininfo | grep -E (chain|blocks|bestblockhash)
+      getblockchaininfo | grep -E '(chain|blocks|bestblockhash)'
     exit 0
   fi
   echo "attempt $i: to start the bitcoin core in 3..2..1 lfg"
