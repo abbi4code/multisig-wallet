@@ -5,7 +5,7 @@ echo "Starting bitcoin core in regtest ✌️"
 
 
 docker run -d \
-  --name bitcoind-regtest
+  --name bitcoind-regtest \
   -p 18443:18443 \
   -p 18444:18444 \
   ruimarinho/bitcoin-core:alpine \

@@ -16,9 +16,9 @@ for i in {1..20}; do
       -rpcpassword=abhishek \
       getblockchaininfo | grep -E (chain|blocks|bestblockhash)
     exit 0
-  fis
-    echo "attempt $i: to start the bitcoin core in 3..2..1 lfg"
-    sleep 3
+  fi
+  echo "attempt $i: to start the bitcoin core in 3..2..1 lfg"
+  sleep 3
 done
 
 echo "Failed to start the bitcoin core even after 20 attempts"
