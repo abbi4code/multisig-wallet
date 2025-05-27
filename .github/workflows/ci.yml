@@ -25,48 +25,10 @@ jobs:
         run: npm ci
       
       - name: Starting Bitcoin Core in regtest
-        run: |
-          echo "starting bitcoin core in regtest ✌️"
-          docker run -d \
-          --name bitcoind-regtest \
-          -p 18443:18443 \
-          -p 18444:18444 \
-          ruimarinho/bitcoin-core:alpine \
-          -regtest \
-          -server \
-          -rpcbind=0.0.0.0:18443 \
-          -rpcallowip=0.0.0.0/0 \
-          -rpcuser=abhishek \
-          -rpcpassword=abhishek \
-          -rpcport=18443 \
-          -printtoconsole \
-          -txindex \
-          -fallbackfee=0.0002 \
-          -acceptnonstdtxn=1
+        run: ./scripts/start_bitcoin_regtest.sh
       
       - name: Wait for bitcoin core to start
-        run: |
-          echo "waiting for bitcoin core to be ready ...."
-          
-          for i in {1..20}; do
-            if docker exec bitcoind-regtest bitcoin-cli \
-                -regtest \
-                -rpcuser=abhishek \
-                -rpcpassword=abhishek \
-                getblockchaininfo >/dev/null 2>&1; then
-              echo "Bitcoin core is readyyy"
-              break
-            fi
-            echo "attempt: $i/20 | bitcoin core starting again 3 2 1 ... lets gooo"
-            sleep 3
-          done
-
-          echo "Bitcoin core status"
-          docker exec bitcoind-regtest bitcoin-cli \
-            -regtest \
-            -rpcuser=abhishek \
-            -rpcpassword=abhishek \
-            getblockchaininfo | grep -E '(chain|blocks|bestblockhash)'
+        run: ./scripts/wait_btccore_tostart.sh
 
         
       - name: Build typescript
@@ -79,16 +41,11 @@ jobs:
       
       - name: Showing bitcoin core logs
         if: failure()
-        run: |
-          echo "Bitcoin core logs" 
-          docker logs --tail 50 bitcoind-regtest
+        run: ./scripts/show_docker_logs.sh
       
       - name: CleanUp bitcoin container
         if: always()
-        run: |
-          echo "removing bitcoind-regtest container"
-          docker stop bitcoind-regtest || true
-          docker rm bitcoind-regtest || true
+        run: ./scripts/cleanup_container.sh
       
 
       - name: CI results hehee 
