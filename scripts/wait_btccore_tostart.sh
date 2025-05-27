@@ -26,6 +26,7 @@ sleep 5
 
 for i in {1..20}; do 
   if docker exec bitcoind-regtest bitcoin-cli \
+    -regtest \
     -rpcuser=abhishek \
     -rpcpassword=abhishek \
     getblockchaininfo  >/dev/null 2>&1; then
@@ -33,8 +34,10 @@ for i in {1..20}; do
 
     echo "Checking bitcoin core status"
     docker exec bitcoind-regtest bitcoin-cli \
+      -regtest \
       -rpcuser=abhishek \
       -rpcpassword=abhishek \
+      -rpcport=18443
       getblockchaininfo | grep -E '(chain|blocks|bestblockhash)'
     exit 0
   fi
