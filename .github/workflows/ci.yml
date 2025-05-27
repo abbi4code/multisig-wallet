@@ -24,6 +24,11 @@ jobs:
       
       - name: Install Dependencies
         run: npm ci
+
+      - name: Making scripts executable
+        run: |
+          chmod +x scripts/*.sh
+          ls -la scripts/
       
       - name: Starting Bitcoin Core in regtest
         run: ./scripts/start_bitcoin_regtest.sh
